@@ -3,6 +3,8 @@ package com.example.catfacts
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.example.catfacts.databinding.ActivityMainBinding
+import com.example.catfacts.view.FactsListFragment
+import com.example.catfacts.view.FavoritesListFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
 
