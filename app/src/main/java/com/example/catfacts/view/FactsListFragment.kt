@@ -4,8 +4,9 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.example.catfacts.R
 import com.example.catfacts.model.CatModel
 import com.example.catfacts.presenter.FactsListPresenter
@@ -16,6 +17,7 @@ import io.reactivex.schedulers.Schedulers
 class FactsListFragment : Fragment() {
     private var presenter: FactsListPresenter = FactsListPresenter().apply { init() }
     private val compositeDisposable = CompositeDisposable()
+    private lateinit var recyclerAdapter: FactsListRecyclerAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -39,12 +41,12 @@ class FactsListFragment : Fragment() {
     }
 
     private fun displayCatList(list: List<CatModel>) {
-        val output: StringBuilder = StringBuilder()
-        for (cat: CatModel in list) {
-            output.append(cat.text).append("\n")
+        val recyclerView: RecyclerView = requireActivity().findViewById(R.id.recyclerView)
+        recyclerAdapter = FactsListRecyclerAdapter(list)
+        recyclerView.also {
+            it.layoutManager = LinearLayoutManager(context)
+            it.adapter = recyclerAdapter
         }
-        val textView: TextView = requireView().findViewById(R.id.catsTextView)
-        textView.text = output.toString()
     }
 
     override fun onDestroy() {
