@@ -1,7 +1,8 @@
 package com.example.catfacts.presenter
 
-import com.example.catfacts.Api
+import com.example.catfacts.network.Api
 import com.example.catfacts.model.CatModel
+import com.example.catfacts.network.RetrofitHelper
 import com.google.gson.GsonBuilder
 import io.reactivex.Single
 import retrofit2.Retrofit
@@ -11,26 +12,13 @@ import retrofit2.converter.gson.GsonConverterFactory
 const val baseCatsUrl = "https://cat-fact.herokuapp.com/"
 
 class FactsListPresenter {
-    private lateinit var api: Api
+    private lateinit var retrofitInstance: RetrofitHelper
 
     fun init() {
-        val retrofit = createRetrofit()
-        api = retrofit.create(Api::class.java)
+       retrofitInstance = RetrofitHelper().apply { initRetrofit(baseCatsUrl) }
     }
 
     fun callApiRequest(): Single<List<CatModel>> {
-        return api.getCatFacts()
-    }
-
-    private fun createRetrofit(): Retrofit {
-        val gson = GsonBuilder()
-            .setLenient()
-            .create()
-
-        return Retrofit.Builder()
-            .baseUrl(baseCatsUrl)
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .addCallAdapterFactory(RxJava2CallAdapterFactory.create())
-            .build()
+        return retrofitInstance.api.getCatFacts()
     }
 }
