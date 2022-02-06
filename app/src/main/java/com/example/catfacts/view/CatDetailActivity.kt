@@ -39,7 +39,11 @@ class CatDetailActivity : AppCompatActivity() {
                 override fun onResponse(call: Call<ImageModel>, response: Response<ImageModel>) {
                     if (response.isSuccessful) {
                         val imageView: ImageView = findViewById(R.id.imageView)
-                        Picasso.with(applicationContext).load(response.body()?.file).into(imageView)
+                        Picasso.with(applicationContext)
+                            .load(response.body()?.file)
+                            .fit().centerCrop()
+                            .placeholder(R.drawable.loader)
+                            .into(imageView)
                     }
                 }
 
