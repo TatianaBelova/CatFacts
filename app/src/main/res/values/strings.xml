@@ -2,4 +2,6 @@
     <string name="app_name">CatFacts</string>
     <string name="facts_from_internet">Факты из интернета</string>
     <string name="favorites">Избранное</string>
+    <string name="errorText">Что-то пошло не так. Пожалуйста, попробуйте ещё раз позднее.</string>
+    <string name="retry">Повторить</string>
 </resources>

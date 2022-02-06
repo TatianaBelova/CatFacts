@@ -1,9 +1,13 @@
 package com.example.catfacts.view
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
+import android.view.View.GONE
+import android.view.View.VISIBLE
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -18,6 +22,8 @@ class FactsListFragment : Fragment() {
     private var presenter: FactsListPresenter = FactsListPresenter().apply { init() }
     private val compositeDisposable = CompositeDisposable()
     private lateinit var recyclerAdapter: FactsListRecyclerAdapter
+    private lateinit var recyclerView: RecyclerView
+    private lateinit var errorPlaceholder : View
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -29,6 +35,11 @@ class FactsListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         getCatFactsFromApi()
+        recyclerView = requireActivity().findViewById(R.id.recyclerView)
+        errorPlaceholder = requireActivity().findViewById(R.id.errorView)
+        errorPlaceholder.findViewById<Button>(R.id.tryAgain).setOnClickListener {
+            getCatFactsFromApi()
+        }
     }
 
     private fun getCatFactsFromApi() {
@@ -36,17 +47,24 @@ class FactsListFragment : Fragment() {
             presenter.callApiRequest()
                 .subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
-                .subscribe(this::displayCatList)
+                .subscribe(this::displayCatList, this::doOnError)
         )
     }
 
     private fun displayCatList(list: List<CatModel>) {
-        val recyclerView: RecyclerView = requireActivity().findViewById(R.id.recyclerView)
+        recyclerView.visibility = VISIBLE
+        errorPlaceholder.visibility = GONE
         recyclerAdapter = FactsListRecyclerAdapter(list)
         recyclerView.also {
             it.layoutManager = LinearLayoutManager(context)
             it.adapter = recyclerAdapter
         }
+    }
+
+    private fun doOnError(error: Throwable) {
+        Log.e(null, error.message.toString())
+        recyclerView.visibility = GONE
+        errorPlaceholder.visibility = VISIBLE
     }
 
     override fun onDestroy() {
