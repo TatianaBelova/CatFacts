@@ -32,27 +32,10 @@ internal class FactsListRecyclerAdapter(private var itemsList: List<CatModel>) :
         val item = itemsList[position]
         holder.itemTextView.text = item.text
         holder.itemView.setOnClickListener {
-
             val intent = Intent(it.context, CatDetailActivity::class.java)
-            intent.putExtra(catDetailTag, item.text)
+            intent.putExtra(catDetailTag, item)
+            intent.putExtra("string", db)
             it.context.startActivity(intent)
-
-
-
-
-//            (it.context).applicationContext.supportFragmentManager.
-//            ((it.parent.parent as LinearLayout).parent as FragmentActivity)
-//            (it.parent.parent as FragmentActivity).
-//            (it.context as FragmentActivity).supportFragmentManager.beginTransaction()
-//                .replace(R.id.cat_detail, CatDetailFragment(), "f")
-//                .addToBackStack("crop_type")
-//                .commit()
-
-//            Toast.makeText(
-//                it.context,
-//                "Recycle Click ${holder.itemTextView.text}",
-//                Toast.LENGTH_SHORT
-//            ).show()
         }
     }
 

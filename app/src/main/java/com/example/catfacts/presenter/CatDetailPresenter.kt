@@ -1,9 +1,7 @@
 package com.example.catfacts.presenter
 
-import com.example.catfacts.model.CatModel
 import com.example.catfacts.model.ImageModel
 import com.example.catfacts.network.RetrofitHelper
-import io.reactivex.Single
 import retrofit2.Call
 
 const val baseCatImageUrl = "https://aws.random.cat/"

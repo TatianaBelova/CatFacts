@@ -2,12 +2,13 @@ package com.example.catfacts.view
 
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.PackageManagerCompat.LOG_TAG
+import com.example.catfacts.MainActivity
 import com.example.catfacts.R
+import com.example.catfacts.model.CatModel
 import com.example.catfacts.model.ImageModel
 import com.example.catfacts.presenter.CatDetailPresenter
 import com.squareup.picasso.Picasso
@@ -17,6 +18,7 @@ import retrofit2.Response
 
 
 class CatDetailActivity : AppCompatActivity() {
+    private lateinit var mainActivity: MainActivity
     private var presenter = CatDetailPresenter().apply { init() }
 
     companion object {
@@ -27,12 +29,17 @@ class CatDetailActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.cat_detail)
         title = "Факт"
+        mainActivity = getActivity as MainActivity
         initializeView()
     }
 
     private fun initializeView() {
-        this.findViewById<TextView>(R.id.catDetailTextView).text =
-            intent?.extras?.getString(catDetailTag)
+        val catFact : CatModel = intent?.extras?.getSerializable(catDetailTag) as CatModel
+        this.findViewById<TextView>(R.id.catDetailTextView).text = catFact.text
+
+        this.findViewById<Button>(R.id.addToFavorite).setOnClickListener {
+            db.put(catFact)
+        }
 
         presenter.callApiRequest().enqueue(
             object : Callback<ImageModel> {

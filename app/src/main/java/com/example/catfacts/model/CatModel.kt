@@ -1,3 +1,10 @@
 package com.example.catfacts.model
 
-data class CatModel (val id: String, val text: String)
+import org.kodein.db.model.Id
+import java.io.Serializable
+
+data class CatModel(
+    @Id val uid: String,
+    val id: String,
+    val text: String,
+) : Serializable
