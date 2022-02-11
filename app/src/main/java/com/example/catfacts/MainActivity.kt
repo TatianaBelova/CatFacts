@@ -2,18 +2,16 @@ package com.example.catfacts
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import com.example.catfacts.database.DbHelper
 import com.example.catfacts.databinding.ActivityMainBinding
 import com.example.catfacts.view.FactsListFragment
 import com.example.catfacts.view.FavoritesListFragment
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.google.android.material.navigation.NavigationBarView
-import org.kodein.db.DB
-import org.kodein.db.impl.open
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
-    lateinit var db : DB
 
     private val itemSelectedListener = NavigationBarView.OnItemSelectedListener { menuItem ->
         when (menuItem.itemId) {
@@ -48,8 +46,10 @@ class MainActivity : AppCompatActivity() {
             supportFragmentManager.beginTransaction()
                 .replace(R.id.content, fragment, fragment.javaClass.simpleName)
                 .commit()
-        }
 
-        db = DB.open(applicationInfo.dataDir + "catFactsDB")
+            if (DbHelper.getDB() == null) {
+                DbHelper.createDB(applicationInfo.dataDir)
+            }
+        }
     }
 }

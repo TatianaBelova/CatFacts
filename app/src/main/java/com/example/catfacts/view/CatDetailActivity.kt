@@ -6,7 +6,7 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
-import com.example.catfacts.MainActivity
+import com.example.catfacts.database.DbHelper
 import com.example.catfacts.R
 import com.example.catfacts.model.CatModel
 import com.example.catfacts.model.ImageModel
@@ -16,10 +16,13 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 
+enum class ButtonType { ADD, DELETE }
 
 class CatDetailActivity : AppCompatActivity() {
-    private lateinit var mainActivity: MainActivity
     private var presenter = CatDetailPresenter().apply { init() }
+    lateinit var catFact: CatModel
+    lateinit var addToFavoriteButton: Button
+    lateinit var buttonType: ButtonType
 
     companion object {
         const val catDetailTag = "catDetailTag"
@@ -28,19 +31,19 @@ class CatDetailActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.cat_detail)
-        title = "Факт"
-        mainActivity = getActivity as MainActivity
         initializeView()
     }
 
     private fun initializeView() {
-        val catFact : CatModel = intent?.extras?.getSerializable(catDetailTag) as CatModel
+        title = "Факт"
+        catFact = intent?.extras?.getSerializable(catDetailTag) as CatModel
         this.findViewById<TextView>(R.id.catDetailTextView).text = catFact.text
+        addToFavoriteButton = this.findViewById(R.id.addToFavorite)
+        setUpImage()
+        setUpButtonClickListener()
+    }
 
-        this.findViewById<Button>(R.id.addToFavorite).setOnClickListener {
-            db.put(catFact)
-        }
-
+    private fun setUpImage() {
         presenter.callApiRequest().enqueue(
             object : Callback<ImageModel> {
                 override fun onResponse(call: Call<ImageModel>, response: Response<ImageModel>) {
@@ -59,5 +62,30 @@ class CatDetailActivity : AppCompatActivity() {
                 }
             }
         )
+    }
+
+    private fun setUpButtonClickListener() {
+        getButtonType()
+        addToFavoriteButton.setOnClickListener {
+            when (buttonType) {
+                ButtonType.ADD -> {
+                    DbHelper.insertIntoDB(catFact)
+                }
+                ButtonType.DELETE -> {
+                    DbHelper.deleteFromDB(catFact.uid)
+                }
+            }
+            getButtonType()
+        }
+    }
+
+    private fun getButtonType() {
+        if (DbHelper.getFromDBByIndex(catFact.uid) != null) {
+            buttonType = ButtonType.DELETE
+            addToFavoriteButton.text = "Удалить из избранного"
+        } else {
+            buttonType = ButtonType.ADD
+            addToFavoriteButton.text = "Добавить в избранное"
+        }
     }
 }
